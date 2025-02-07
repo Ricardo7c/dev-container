@@ -46,7 +46,7 @@ OBs.: O script tambem nomeia o conteiner, se deseja criar mais de um container, 
 ## 🏷️ Notas Importantes
 
 - O suporte ao X11 funciona apenas em sistemas Linux com um servidor gráfico ativo.
-- Caso tenha problemas com permissões do X11, tente executar:
+- Caso tenha problemas com permissões do X11, execute esse comando no host e tente novamente:
   ```bash
-  xhost +local:
+  xhost +local:docker
   ```

@@ -30,7 +30,7 @@ RUN curl -fsSL https://deb.nodesource.com/setup_18.x | bash - && apt install -y 
 RUN /bin/bash -c "source $HOME/.cargo/env && rustc --version && python3 --version && node --version && git --version"
 
 # Definindo o diretório de trabalho dentro do container
-WORKDIR /workspace
+WORKDIR /root/Dev
 
 # Comando padrão ao rodar o container
 CMD ["/bin/bash"]
