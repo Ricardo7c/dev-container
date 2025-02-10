@@ -15,22 +15,25 @@ RUN apt update && apt install -y \
     lsb-release \
     sudo \
     gnupg2 \
-    && apt clean
+    wget \
+    nano \
+    && apt clean \
+    && rm -rf /var/lib/apt/lists/*
 
-# Instalar Rust
+# Instalar Rust para o root
 RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
 
-# Usar Bash e fonte o ambiente do Rust
-RUN /bin/bash -c "source $HOME/.cargo/env"
+# Adicionar Rust ao PATH do root
+ENV PATH="/root/.cargo/bin:${PATH}"
 
-# Instalar Node.js (usando o repositório oficial para garantir a versão mais recente)
-RUN curl -fsSL https://deb.nodesource.com/setup_18.x | bash - && apt install -y nodejs
+# Define uma senha padrão para o root
+RUN echo 'root:1234' | chpasswd
 
-# Verificando as versões para garantir que as instalações funcionaram
-RUN /bin/bash -c "source $HOME/.cargo/env && rustc --version && python3 --version && node --version && git --version"
+# Define o usuário padrão como root
+USER root
 
 # Definindo o diretório de trabalho dentro do container
-WORKDIR /root/Dev
+WORKDIR /home/Dev
 
 # Comando padrão ao rodar o container
 CMD ["/bin/bash"]

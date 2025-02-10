@@ -1,52 +1,102 @@
-# 🚀 Ambiente de Desenvolvimento com Docker
+# Container Docker para Ambiente de Desenvolvimento
 
-Este repositório contém um dockfile de um ambiente de desenvolvimento baseado, configurado para Python, Rust e Node.js. Além disso, há scripts para facilitar a criação e execução do contêiner com suporte ao X11, permitindo rodar aplicações gráficas no Linux.
+Este repositório contém um Dockerfile para configurar um ambiente de desenvolvimento completo com diversas ferramentas e linguagens, incluindo Rust e Python. O contêiner é baseado no Ubuntu 24.04 e está configurado para usar o usuário root com uma senha padrão.
 
-## 📌 Tecnologias Instaladas
+## Estrutura do Dockerfile
 
-- **Ubuntu 24.04**
-- **Python (python3-full + pip)**
-- **Rust (via rustup)**
-- **Node.js (via repositório oficial)**
-- **Git**
+O Dockerfile realiza as seguintes tarefas:
+1. Utiliza a imagem base do Ubuntu 24.04.
+2. Evita interações durante a instalação definindo a variável `DEBIAN_FRONTEND` como `noninteractive`.
+3. Atualiza os pacotes e instala diversas ferramentas essenciais, incluindo `curl`, `git`, `python3-full`, `python3-pip`, `build-essential`, `ca-certificates`, `lsb-release`, `sudo`, `gnupg2`, `wget`, e `nano`.
+4. Instala o Rust e adiciona seu caminho (`PATH`).
+5. Define uma senha padrão para o usuário root.
+6. Define o diretório de trabalho como `/home/Dev`.
+7. O comando padrão ao iniciar o contêiner é `/bin/bash`.
 
-## 📂 Estrutura do Repositório
+## Dockerfile
 
+```Dockerfile
+# Usando uma imagem base do Ubuntu
+FROM ubuntu:24.04
+
+# Evita interações durante a instalação
+ENV DEBIAN_FRONTEND=noninteractive
+
+# Atualiza os pacotes e instala as ferramentas necessárias
+RUN apt update && apt install -y \
+    curl \
+    git \
+    python3-full \
+    python3-pip \
+    build-essential \
+    ca-certificates \
+    lsb-release \
+    sudo \
+    gnupg2 \
+    wget \
+    nano \
+    && apt clean \
+    && rm -rf /var/lib/apt/lists/*
+
+# Instalar Rust para o root
+RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
+
+# Adicionar Rust ao PATH do root
+ENV PATH="/root/.cargo/bin:${PATH}"
+
+# Define uma senha padrão para o root
+RUN echo 'root:1234' | chpasswd
+
+# Define o usuário padrão como root
+USER root
+
+# Definindo o diretório de trabalho dentro do container
+WORKDIR /home/Dev
+
+# Comando padrão ao rodar o container
+CMD ["/bin/bash"]
 ```
-📁 docker-dev-env/
-│── 📄 Dockerfile        # Configuração do ambiente no Docker
-│── 📄 create_container.sh  # Script para criar o contêiner
-│── 📄 run_container.sh  # Script para rodar o contêiner com suporte ao X11
-│── 📄 README.md         # Documentação do projeto
+
+## Como Usar
+
+### Construir a Imagem Docker
+
+Para construir a imagem Docker a partir do Dockerfile, execute o seguinte comando no diretório onde o Dockerfile está localizado:
+
+```sh
+docker build -t dev-container .
 ```
 
-## 🛠️ Configuração e Uso
+### Executar o Contêiner
 
-### 🔹 1. Construindo a Imagem Docker
+Para criar e executar o contêiner, use o comando abaixo. Isso irá mapear a porta 8080 do contêiner para a porta 8080 do host, permitir a execução interativa e montar o diretório `~/Dev` do host no contêiner.
 
-```bash
-./create_container.sh
+```sh
+docker run -d -it \
+  --name dev-container \
+  -e DISPLAY=$DISPLAY \
+  -v /tmp/.X11-unix:/tmp/.X11-unix \
+  -v ~/Dev:/home/Dev \
+  dev-container
 ```
 
-### 🔹 2. Criando o Contêiner com Suporte ao X11
+### Conectar-se ao Contêiner
 
-Para executar o contêiner e permitir o uso de aplicativos gráficos no Linux, utilize o script `create_container.sh`:
+Para conectar-se ao contêiner em execução, use o comando:
 
-```bash
-./run_container.sh
+```sh
+docker exec -it dev-container /bin/bash
 ```
 
-Esse script configura automaticamente o display para o X11, permitindo que aplicativos gráficos sejam executados dentro do contêiner além de adicionar um bind mount para persistencia de arquivos.
+## Notas
 
-OBs.: O script tambem nomeia o conteiner, se deseja criar mais de um container, alterar a linha 2 do script:
-```bash
---name dev-container 
+- Certifique-se de que o servidor X11 esteja em execução no host e a variável DISPLAY esteja configurada corretamente.
+- Para permitir que o contêiner Docker se conecte ao servidor X11, execute no Host:
+
+```sh
+ `xhost +local:docker` 
 ```
 
-## 🏷️ Notas Importantes
+## Contribuição
 
-- O suporte ao X11 funciona apenas em sistemas Linux com um servidor gráfico ativo.
-- Caso tenha problemas com permissões do X11, execute esse comando no host e tente novamente:
-  ```bash
-  xhost +local:docker
-  ```
+Se você encontrar algum problema ou tiver sugestões de melhorias, sinta-se à vontade para abrir uma issue ou enviar um pull request.
