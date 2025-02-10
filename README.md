@@ -13,50 +13,6 @@ O Dockerfile realiza as seguintes tarefas:
 6. Define o diretório de trabalho como `/home/Dev`.
 7. O comando padrão ao iniciar o contêiner é `/bin/bash`.
 
-## Dockerfile
-
-```Dockerfile
-# Usando uma imagem base do Ubuntu
-FROM ubuntu:24.04
-
-# Evita interações durante a instalação
-ENV DEBIAN_FRONTEND=noninteractive
-
-# Atualiza os pacotes e instala as ferramentas necessárias
-RUN apt update && apt install -y \
-    curl \
-    git \
-    python3-full \
-    python3-pip \
-    build-essential \
-    ca-certificates \
-    lsb-release \
-    sudo \
-    gnupg2 \
-    wget \
-    nano \
-    && apt clean \
-    && rm -rf /var/lib/apt/lists/*
-
-# Instalar Rust para o root
-RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
-
-# Adicionar Rust ao PATH do root
-ENV PATH="/root/.cargo/bin:${PATH}"
-
-# Define uma senha padrão para o root
-RUN echo 'root:1234' | chpasswd
-
-# Define o usuário padrão como root
-USER root
-
-# Definindo o diretório de trabalho dentro do container
-WORKDIR /home/Dev
-
-# Comando padrão ao rodar o container
-CMD ["/bin/bash"]
-```
-
 ## Como Usar
 
 ### Construir a Imagem Docker
