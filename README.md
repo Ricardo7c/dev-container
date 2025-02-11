@@ -1,4 +1,4 @@
-## Documentação do Repositório Docker de Ambiente de Desenvolvimento
+## Docker de Ambiente de Desenvolvimento
 
 Este repositório contém um Dockerfile e scripts que utilizo para criar meu ambiente de desenvolvimento. O ambiente é baseado no Ubuntu 24.04 e inclui ferramentas essenciais para o meu uso como Python, Rust e nodejs.
 
