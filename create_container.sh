@@ -1,5 +1,6 @@
 #!/bin/bash
 
+#Cria o container
 docker run -d -it \
   --name dev-container \
   -e DISPLAY=$DISPLAY \

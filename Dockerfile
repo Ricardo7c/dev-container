@@ -17,6 +17,10 @@ RUN apt update && apt install -y \
     gnupg2 \
     wget \
     nano \
+    xfce4-settings \
+    xfce4-terminal \
+    thunar \
+    zsh \
     && apt clean \
     && rm -rf /var/lib/apt/lists/*
 
@@ -35,6 +39,6 @@ USER root
 # Definindo o diretório de trabalho dentro do container
 WORKDIR /home/Dev
 
-# Comando padrão ao rodar o container
-CMD ["/bin/bash"]
+# Tornar o zsh o terminal padrão
+SHELL ["/bin/zsh", "-c"]
 
